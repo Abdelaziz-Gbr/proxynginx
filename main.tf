@@ -1,13 +1,3 @@
-terraform {
-  backend "s3" {
-    bucket         = "my-terraform-state-bucket-300301"
-    key            = "lock"
-    use_lockfile   = true
-    region         = "us-east-1"
-    encrypt        = true
-  }
-}
-
 module "vpc" {
   source   = "./vpc"
   vpc_cidr = var.vpc_cidr
@@ -99,7 +89,7 @@ module "service_alb" {
   max_size                    = 2
   min_size                    = 2
   desired_capacity            = 2
-  user_data                   = file("nginx-userdata")
+  user_data                   = file("apache-userdata")
 }
 
 /* 
