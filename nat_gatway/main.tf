@@ -1,5 +1,5 @@
 resource "aws_eip" "elastic_ip" {
-  domain   = "vpc"
+  domain = "vpc"
 }
 
 resource "aws_nat_gateway" "nat_gateway" {

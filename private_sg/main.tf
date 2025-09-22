@@ -7,7 +7,7 @@ resource "aws_security_group" "private_sg" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = [var.vpc_cidr]
-      }
+  }
 
   ingress {
     from_port   = 443

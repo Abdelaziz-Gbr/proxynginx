@@ -1,9 +1,9 @@
 variable "vpc_id" {
-    description = "The ID of the VPC"
-    type        = string
-    }
+  description = "The ID of the VPC"
+  type        = string
+}
 
 variable "internet_gw_name" {
-    description = "The name of the Internet Gateway"
-    type        = string
-    }
+  description = "The name of the Internet Gateway"
+  type        = string
+}

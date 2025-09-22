@@ -28,7 +28,7 @@ variable "key_name" {
   type        = string
 }
 
-variable "private_instance"{
+variable "private_instance" {
   description = "indicate if instance is private or public"
   type        = list(string)
 }
