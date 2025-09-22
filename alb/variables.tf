@@ -49,8 +49,8 @@ variable "min_size" {
   type        = number
 }
 variable "desired_capacity" {
-    description = "The desired capacity of the Auto Scaling group"
-    type        = number
+  description = "The desired capacity of the Auto Scaling group"
+  type        = number
 }
 variable "user_data" {
   description = "The user data script to configure instances"

@@ -1,7 +1,11 @@
-provider "aws" {
-  shared_config_files      = ["conf"]
-  shared_credentials_files = ["creds"]
-  profile                  = "default"
+terraform {
+  backend "s3" {
+    bucket         = "my-terraform-state-bucket-300301"
+    key            = "lock"
+    use_lockfile   = true
+    region         = "us-east-1"
+    encrypt        = true
+  }
 }
 
 module "vpc" {
@@ -9,10 +13,10 @@ module "vpc" {
   vpc_cidr = var.vpc_cidr
 }
 module "subnet" {
-  count       = 4
-  source      = "./subnet"
-  vpc_id      = module.vpc.vpc_id
-  subnet_cidr = var.public_subnet_cidr[count.index]
+  count             = 4
+  source            = "./subnet"
+  vpc_id            = module.vpc.vpc_id
+  subnet_cidr       = var.public_subnet_cidr[count.index]
   availability_zone = var.availability_zones[count.index]
 }
 module "internet_gw" {
@@ -40,21 +44,21 @@ module "public_sg" {
 }
 
 module "proxy_alb" {
-  source           = "./alb"
-  name             = "proxy-alb"
-  internal         = false
-  security_group_id = module.public_sg.public_sg_id
-  subnet_ids        = [module.subnet[0].subnet_id, module.subnet[1].subnet_id]
-  target_group_name = "proxy-tg"
-  vpc_id            = module.vpc.vpc_id
-  instance_type    = var.instance_type
-  key_name         = var.key_name
+  source                      = "./alb"
+  name                        = "proxy-alb"
+  internal                    = false
+  security_group_id           = module.public_sg.public_sg_id
+  subnet_ids                  = [module.subnet[0].subnet_id, module.subnet[1].subnet_id]
+  target_group_name           = "proxy-tg"
+  vpc_id                      = module.vpc.vpc_id
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
   associate_public_ip_address = true
-  asg_name         = "proxy-asg"
-  max_size         = 2
-  min_size         = 2
-  desired_capacity = 2
-  user_data        = templatefile("proxy-userdata", {private_alb_dns = module.service_alb.lb_dns_name})
+  asg_name                    = "proxy-asg"
+  max_size                    = 2
+  min_size                    = 2
+  desired_capacity            = 2
+  user_data                   = templatefile("proxy-userdata", { private_alb_dns = module.service_alb.lb_dns_name })
 }
 module "nat_gateway" {
   source           = "./nat_gatway"
@@ -81,21 +85,21 @@ module "private_sg" {
 }
 
 module "service_alb" {
-  source           = "./alb"
-  name             = "service-alb"
-  internal         = true
-  security_group_id = module.private_sg.private_sg_id
-  subnet_ids        = [module.subnet[2].subnet_id, module.subnet[3].subnet_id]
-  target_group_name = "service-tg"
-  vpc_id            = module.vpc.vpc_id
-  instance_type    = var.instance_type
-  key_name         = var.key_name
+  source                      = "./alb"
+  name                        = "service-alb"
+  internal                    = true
+  security_group_id           = module.private_sg.private_sg_id
+  subnet_ids                  = [module.subnet[2].subnet_id, module.subnet[3].subnet_id]
+  target_group_name           = "service-tg"
+  vpc_id                      = module.vpc.vpc_id
+  instance_type               = var.instance_type
+  key_name                    = var.key_name
   associate_public_ip_address = false
-  asg_name         = "service-asg"
-  max_size         = 2
-  min_size         = 2
-  desired_capacity = 2
-  user_data        = file("nginx-userdata")
+  asg_name                    = "service-asg"
+  max_size                    = 2
+  min_size                    = 2
+  desired_capacity            = 2
+  user_data                   = file("nginx-userdata")
 }
 
 /* 
