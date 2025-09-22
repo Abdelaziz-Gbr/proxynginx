@@ -5,3 +5,4 @@ route_table_name   = "main-rt"
 instance_type      = "t2.micro"
 key_name           = "aws-key"
 private_instance   = ["no", "no", "yes", "yes"]
+availability_zones = ["us-east-1a", "us-east-1b","us-east-1a", "us-east-1b"]

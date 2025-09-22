@@ -32,3 +32,8 @@ variable "private_instance" {
   description = "indicate if instance is private or public"
   type        = list(string)
 }
+
+variable "availability_zones" {
+  description = "List of availability zones"
+  type        = list(string)
+}

@@ -13,8 +13,8 @@ module "subnet" {
   source      = "./subnet"
   vpc_id      = module.vpc.vpc_id
   subnet_cidr = var.public_subnet_cidr[count.index]
+  availability_zone = var.availability_zones[count.index]
 }
-
 module "internet_gw" {
   source           = "./internetgw"
   vpc_id           = module.vpc.vpc_id
@@ -34,11 +34,30 @@ module "route_table_association" {
   subnet_id      = module.subnet[count.index].subnet_id
   route_table_id = module.public-rt.route_table_id
 }
-
 module "public_sg" {
   source = "./public_sg"
   vpc_id = module.vpc.vpc_id
 }
+
+module "app_lb"{
+  source           = "./alb"
+  name             = "broxy-alb"
+  internal         = false
+  security_group_id = module.public_sg.public_sg_id
+  subnet_ids        = [module.subnet[0].subnet_id, module.subnet[1].subnet_id]
+  target_group_name = "broxy-tg"
+  vpc_id            = module.vpc.vpc_id
+  instance_type    = var.instance_type
+  key_name         = var.key_name
+  associate_public_ip_address = true
+  asg_name         = "broxy-asg"
+  max_size         = 2
+  min_size         = 2
+  desired_capacity = 2
+}
+
+/* 
+
 
 module "public_instance" {
   count               = 2
@@ -82,4 +101,4 @@ module "private_instance" {
   key_name            = var.key_name
   associate_public_ip = false
   security_group_id   = module.private_sg.private_sg_id
-}
+} */
