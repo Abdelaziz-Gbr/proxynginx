@@ -60,15 +60,7 @@ resource "aws_launch_template" "app_lt" {
     security_groups             = [var.security_group_id]
   }
 
-  user_data = base64encode(<<-EOF
-              #!/bin/bash
-              apt update -y
-              apt install -y apache2
-              systemctl enable apache2
-              systemctl start apache2
-              echo "Hello from Terraform AutoScaling EC2" > /var/www/html/index.html
-              EOF
-  )
+  user_data = base64encode(var.user_data)
 }
 
 resource "aws_autoscaling_group" "app_asg" {
